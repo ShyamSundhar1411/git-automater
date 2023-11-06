@@ -2,7 +2,7 @@ use dialoguer::{{console::Style, theme::ColorfulTheme, FuzzySelect, Input }};
 use std::process::{Command,exit};
 
 pub fn prompt(){
-    let items = vec!["initialize git repository","add files","commit","push","add license","add readme.MD","exit"];
+    let items = vec!["initialize git repository","add files","commit","push","add license","add readme.MD","clear cache","exit"];
     let selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("What do you choose?").items(&items).interact().unwrap();
     println!("{}",items[selection]);
     if items[selection] == "add files"{
@@ -16,6 +16,9 @@ pub fn prompt(){
     }
     if items[selection] == "push"{
         push();
+    }
+    if items[selection] == "clear cache"{
+        clear_cache();
     }
 }
 fn add_files(){
@@ -40,5 +43,10 @@ fn push(){
     let branch: String = Input::new().with_prompt("Branch Name").default("main".to_string()).interact_text().unwrap();
     let alias: String = Input::new().with_prompt("Repo Alias").default("origin".to_string()).interact_text().unwrap();
     let output = Command::new("git").arg("push").arg("-u").arg(alias).arg(branch).output().expect("Failed to push to respective repository");
+    println!("Status: {}",String::from_utf8_lossy(&output.stdout));
+}
+
+fn clear_cache(){
+    let  output = Command::new("git").arg("rm").arg("-r").arg("--cached").arg(".").output().expect("Failed to clear cache");
     println!("Status: {}",String::from_utf8_lossy(&output.stdout));
 }
