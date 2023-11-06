@@ -37,6 +37,7 @@ fn commit(){
     let commit_message: String = Input::new().with_prompt("Commit Message").interact_text().unwrap();
     let output = Command::new("git").arg("commit").arg("-m").arg(commit_message).output().expect("Failed to add commit message");
     println!("Status: {}",String::from_utf8_lossy(&output.stdout));
+    println!("Status: {}",String::from_utf8_lossy(&output.stderr));
 }
 
 fn push(){
@@ -44,9 +45,11 @@ fn push(){
     let alias: String = Input::new().with_prompt("Repo Alias").default("origin".to_string()).interact_text().unwrap();
     let output = Command::new("git").arg("push").arg("-u").arg(alias).arg(branch).output().expect("Failed to push to respective repository");
     println!("Status: {}",String::from_utf8_lossy(&output.stdout));
+    println!("Status: {}",String::from_utf8_lossy(&output.stderr));
 }
 
 fn clear_cache(){
     let  output = Command::new("git").arg("rm").arg("-r").arg("--cached").arg(".").output().expect("Failed to clear cache");
     println!("Status: {}",String::from_utf8_lossy(&output.stdout));
+    println!("Status: {}",String::from_utf8_lossy(&output.stderr));
 }
