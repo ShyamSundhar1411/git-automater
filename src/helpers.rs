@@ -41,8 +41,17 @@ fn commit(){
 }
 
 fn push(){
-    let branch: String = Input::new().with_prompt("Branch Name").default("main".to_string()).interact_text().unwrap();
-    let alias: String = Input::new().with_prompt("Repo Alias").default("origin".to_string()).interact_text().unwrap();
+    let branches = Command::new("git").arg("branch").arg("--format").arg("%(refname:short)").output().expect("Failed to fetch branches");
+    let branch_output = std::str::from_utf8(&branches.stdout).expect("Failed to parse branch output");
+    let branch_list: Vec<&str> = branch_output.lines().collect();
+    let branch_selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select branch").items(&branch_list).interact().unwrap();
+
+    let remote = Command::new("git").arg("remote").output().expect("Failed to fetch remote");
+    let remote_output = std::str::from_utf8(&remote.stdout).expect("Failed to parse remote output");
+    let remote_list: Vec<&str> = remote_output.lines().collect();
+    let remote_selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select remote").items(&remote_list).interact().unwrap();
+    let branch = branch_list[branch_selection];
+    let alias = remote_list[remote_selection];
     let output = Command::new("git").arg("push").arg("-u").arg(alias).arg(branch).output().expect("Failed to push to respective repository");
     println!("Status: {}",String::from_utf8_lossy(&output.stdout));
     println!("Status: {}",String::from_utf8_lossy(&output.stderr));
