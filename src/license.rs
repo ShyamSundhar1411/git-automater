@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use reqwest::Error;
+use reqwest::{Error, Client};
 
 #[derive(Deserialize,Debug)]
 pub struct License{
@@ -10,11 +10,11 @@ pub struct License{
     pub node_id: String,
 }
 #[tokio::main]
-pub async fn fetch_licenses() -> Result<(), Error> {
-    let request_url = format!("https://api.github.com/licenses");
-    let response = reqwest::get(&request_url).await?;
-    let response_text = response.text().await?;
-    // let licenses: Vec<License> = response.json().await?;
-    println!("API Response: {:?}", response_text);
-    Ok(())
+pub async fn fetch_licenses() -> Result<Vec<License>, Error> {
+    let client = Client::new();
+    let url = "https://api.github.com/licenses";
+    let user_agent = "git-automater";
+    let response = client.get(url).header(reqwest::header::USER_AGENT,user_agent).send().await?;
+    let licenses: Vec<License> = response.json().await?;
+    Ok(licenses)
 }

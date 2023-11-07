@@ -70,6 +70,5 @@ fn clear_cache(){
 }
 
 fn generate_license(){
-    let license = license::fetch_licenses();
-    println!("{:?}",license);
+    let licenses = license::fetch_licenses();
 }
