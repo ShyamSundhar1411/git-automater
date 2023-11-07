@@ -1,5 +1,8 @@
 use dialoguer::{{console::Style, theme::ColorfulTheme, FuzzySelect, Input }};
 use std::process::{Command,exit};
+use crate::license;
+
+
 
 pub fn prompt(){
     let items = vec!["initialize git repository","add files","commit","push","add license","add readme.MD","clear cache","exit"];
@@ -19,6 +22,9 @@ pub fn prompt(){
     }
     if items[selection] == "clear cache"{
         clear_cache();
+    }
+    if items[selection] == "add license"{
+        generate_license();
     }
 }
 fn add_files(){
@@ -61,4 +67,9 @@ fn clear_cache(){
     let  output = Command::new("git").arg("rm").arg("-r").arg("--cached").arg(".").output().expect("Failed to clear cache");
     println!("Status: {}",String::from_utf8_lossy(&output.stdout));
     println!("Status: {}",String::from_utf8_lossy(&output.stderr));
+}
+
+fn generate_license(){
+    let license = license::fetch_licenses();
+    println!("{:?}",license);
 }
