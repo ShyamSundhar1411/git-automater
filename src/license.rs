@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use reqwest::{Error, Client};
+use std::process::{Command,exit};
 
 #[derive(Deserialize,Debug)]
 pub struct License{
@@ -35,4 +36,13 @@ pub async fn fetch_license_content(license: &String) -> Result<LicenseContent,Er
     let response = client.get(url).header(reqwest::header::USER_AGENT,user_agent).send().await?;
     let license: LicenseContent = response.json().await?;
     Ok(license)
+}
+
+pub fn get_git_user_name() -> Option<String> {
+    let output = Command::new("git").arg("config").arg("--global").arg("user.name").output().ok()?;
+    let result: Option<String> = match output.status.success(){
+        true=>Option::from(String::from_utf8_lossy(&output.stdout).to_string()),
+        false=>Option::from(None),
+    };
+    result
 }
