@@ -1,6 +1,7 @@
 use dialoguer::{{console::Style, theme::ColorfulTheme, FuzzySelect, Input }};
 use std::process::{Command,exit};
 use crate::license;
+use std::collections::HashMap;
 
 
 
@@ -70,5 +71,22 @@ fn clear_cache(){
 }
 
 fn generate_license(){
-    let licenses = license::fetch_licenses();
+    let licenses = match license::fetch_licenses(){
+        Ok(licenses) => licenses,
+        Err(err) => {
+            println!("Error fetching licenses: {}", err);
+            return;
+        }
+    };
+    let license_map: HashMap<String, String> = licenses
+        .iter()
+        .map(|license| (license.name.clone(), license.key.clone()))
+        .collect();
+
+    let license_names: Vec<&String> = licenses.iter().map(|license| &license.name).collect();
+    let license_selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Choose your license").items(&license_names).interact().unwrap();
+    let selected_license = license_names[license_selection];
+    let selected_license_key = license_map.get(selected_license).cloned().unwrap_or_default();
+    let license_content = license::fetch_license_content(&selected_license_key);
+    
 }
