@@ -1,8 +1,8 @@
 use dialoguer::{{console::Style, theme::ColorfulTheme, FuzzySelect, Input }};
-use std::process::{Command,exit};
-use std::collections::HashMap;
-use crate::{license, branches};
+use std::{process::{Command,exit}, collections::HashMap};
+use crate::{license::{self, LicenseContent}, branches};
 use crate::commits;
+
 
 fn get_name() -> String {
     let name: String = match license::get_git_user_name() {
@@ -99,7 +99,15 @@ fn generate_license(){
     let license_selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Choose your license").items(&license_names).interact().unwrap();
     let selected_license = license_names[license_selection];
     let selected_license_key = license_map.get(selected_license).cloned().unwrap_or_default();
-    let license_content = license::fetch_license_content(&selected_license_key);
+    let license_content = match license::fetch_license_content(&selected_license_key){
+        Ok(license_content) => license_content,
+        Err(err) => {
+            println!("Error fetching license content: {}",err);
+            return ;
+        }
+    };
     let name = get_name();
+    license::write_license_file(&license_content.body);
+    
 }
 

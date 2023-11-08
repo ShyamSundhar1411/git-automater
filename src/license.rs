@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use reqwest::{Error, Client};
-use std::process::{Command,exit};
+use std::{process::{Command,exit},fs};
 
 #[derive(Deserialize,Debug)]
 pub struct License{
@@ -45,4 +45,8 @@ pub fn get_git_user_name() -> Option<String> {
         false=>Option::from(None),
     };
     result
+}
+
+pub fn write_license_file(content: &str){
+    fs::write("./LICENSE",content);
 }

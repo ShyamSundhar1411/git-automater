@@ -1,4 +1,4 @@
-use std::process::{Command, exit};
+use std::process::Command;
 
 pub fn get_branches() -> Vec<String>{
     let branches = Command::new("git").arg("branch").arg("--format").arg("%(refname:short)").output().expect("Failed to fetch branches");
