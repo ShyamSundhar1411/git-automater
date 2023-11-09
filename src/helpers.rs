@@ -48,7 +48,7 @@ pub fn prompt(){
         exit(0);
     }
     if items[selection] == "commit"{
-        commits::commit();
+        commits::commit_function();
     }
     if items[selection] == "push"{
         push();
