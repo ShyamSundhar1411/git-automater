@@ -1,9 +1,12 @@
 use dialoguer::{{console::Style, theme::ColorfulTheme, FuzzySelect, Input }};
-use std::{process::{Command,exit}, collections::HashMap};
+use std::{process::{Command,exit, Output}, collections::HashMap};
 use crate::{license::{self, LicenseContent}, branches};
 use crate::commits;
 
-
+pub fn status_printer(output:&Output){
+    println!("Status: {}", String::from_utf8_lossy(&output.stdout));
+    println!("Error: {}", String::from_utf8_lossy(&output.stderr));
+}
 fn get_name() -> String {
     let name: String = match license::get_git_user_name() {
         Some(mut name) => {
@@ -68,12 +71,7 @@ pub fn prompt(){
 
 fn initialize(){
     let output = Command::new("git").arg("init").output().expect("Failed to initalize repository");
-    if String::from_utf8_lossy(&output.stdout) != "" {
-         println!("Status: {}",String::from_utf8_lossy(&output.stdout));
-    }
-    else {
-        println!("Error: {}",String::from_utf8_lossy(&output.stderr));
-    }
+    status_printer(&output);
 }
 
 fn push(){
@@ -84,14 +82,12 @@ fn push(){
     let remote_selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select remote").items(&remote_list).interact().unwrap();
     let alias = remote_list[remote_selection].clone();
     let output = Command::new("git").arg("push").arg("-u").arg(alias).arg(branch).output().expect("Failed to push to respective repository");
-    println!("Status: {}",String::from_utf8_lossy(&output.stdout));
-    println!("Status: {}",String::from_utf8_lossy(&output.stderr));
+    status_printer(&output);
 }
 
 fn clear_cache(){
     let  output = Command::new("git").arg("rm").arg("-r").arg("--cached").arg(".").output().expect("Failed to clear cache");
-    println!("Status: {}",String::from_utf8_lossy(&output.stdout));
-    println!("Status: {}",String::from_utf8_lossy(&output.stderr));
+    status_printer(&output);
 }
 
 fn generate_license(){
