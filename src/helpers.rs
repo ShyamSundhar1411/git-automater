@@ -41,6 +41,10 @@ pub fn prompt(){
     let items = vec!["initialize git repository","add files","commit","push","add license","clear cache","exit"];
     let selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("What do you choose?").items(&items).interact().unwrap();
     println!("{}",items[selection]);
+
+    if items[selection] == "initialize git repository"{
+        initialize();
+    }
     if items[selection] == "add files"{
         commits::add_files();
     }
@@ -62,7 +66,15 @@ pub fn prompt(){
 }
 
 
-
+fn initialize(){
+    let output = Command::new("git").arg("init").output().expect("Failed to initalize repository");
+    if String::from_utf8_lossy(&output.stdout) != "" {
+         println!("Status: {}",String::from_utf8_lossy(&output.stdout));
+    }
+    else {
+        println!("Error: {}",String::from_utf8_lossy(&output.stderr));
+    }
+}
 
 fn push(){
     let branch_list: Vec<String> = branches::get_branches();
