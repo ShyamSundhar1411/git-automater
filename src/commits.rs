@@ -34,8 +34,7 @@ impl Commit{
     }
 }
 pub fn add_files(){
-    let file_name: String = Input::new().with_prompt("File Name").default(".".to_string()).interact_text().unwrap();
-    println!("{}",file_name);
+    let file_name: String = Input::new().with_prompt("File Path").default(".".to_string()).interact_text().unwrap();
     if file_name != "."{
         let output = Command::new("git").arg("add").arg(file_name).output().expect("failed to add files");
         helpers::status_printer(&output); 
