@@ -10,7 +10,7 @@ pub async fn get_gitignore_template(languages: &[&str]) -> Result<String, reqwes
     Ok(response)
 }
 fn write_gitignore_file(content: &str) -> Result<(),io::Error>{
-    let path: &str = "./gitignore";
+    let path: &str = "./.gitignore";
     let body = content.to_string();
     let output = match fs::metadata(path).is_ok(){
         true=>{
