@@ -63,6 +63,7 @@ This crate requires the installation of cargo package manager and rust.
 
 * cargo
 * rust
+  
 For further more information, kindly refer the [Documentation](https://www.rust-lang.org/tools/install)
 
 ### Installing
