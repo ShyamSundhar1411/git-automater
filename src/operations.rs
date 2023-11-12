@@ -1,8 +1,8 @@
 use dialoguer::{{console::Style, theme::ColorfulTheme, FuzzySelect }};
 use std::{process::{Command,exit}, collections::HashMap};
-use crate::{license, branches, commits, helpers};
+use crate::{license, branches, commits, helpers, gitignore};
 pub fn prompt(){
-    let items = vec!["initialize git repository","add files","commit","push","add license","clear cache","exit"];
+    let items = vec!["initialize git repository","add files","commit","push","add license","add .gitignore","clear cache","exit"];
     let selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("What do you choose?").items(&items).interact().unwrap();
     println!("{}",items[selection]);
 
@@ -26,6 +26,10 @@ pub fn prompt(){
     }
     if items[selection] == "add license"{
         generate_license();
+    }
+
+    if items[selection] == "add .gitignore"{
+        gitignore::generate_gitignore();
     }
 }
 
@@ -89,6 +93,8 @@ fn generate_license(){
     
     
 }
+
+
 
 fn exit_prompt(){
     println!("{}",Style::new().for_stderr().green().apply_to("Thanks for using me. Have a great day"));
