@@ -1,5 +1,5 @@
 use dialoguer::{{ theme::ColorfulTheme, FuzzySelect, Input }};
-use std::process::Command ;
+use std::{process::Command,collections::HashMap};
 use crate::helpers;
 pub struct Commit{
     description: String,
@@ -48,7 +48,39 @@ pub fn add_files(){
 
 pub fn commit_function(){
     let conventional_commit_types = vec!["feat","fix","docs","style","refractor","perf","test","build","ci","chore","revert"];
-    let type_select = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Choose the type of commit").items(&conventional_commit_types).interact().unwrap();
+    let emoji_mapping: HashMap<&str, &str> = [
+        ("feat", "✨"),
+        ("fix", "🐛"),
+        ("docs", "📝"),
+        ("style", "💄"),
+        ("refactor", "♻️"),
+        ("perf", "⚡"),
+        ("test", "🚨"),
+        ("build", "🔧"),
+        ("ci", "🚀"),
+        ("chore", "🔨"),
+        ("revert", "⏪"),
+    ]
+    .iter()
+    .cloned()
+    .collect();
+let formatted_options: Vec<String> = conventional_commit_types
+.iter()
+.map(|commit_type| {
+    if let Some(emoji) = emoji_mapping.get(commit_type) {
+        format!("{} ({})", commit_type, emoji)
+    } else {
+        commit_type.to_string()
+    }
+})
+.collect();
+
+// Display the custom formatted list with emojis using FuzzySelect
+let type_select = FuzzySelect::new()
+.with_prompt("Select a conventional commit type")
+.items(&formatted_options)
+.interact()
+.expect("Failed to read selection");
     let description: String = Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter a short description").interact_text().unwrap();
     let commit_type = conventional_commit_types[type_select];
     let body: Option<String> = Some(Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter brief description").allow_empty(true).interact_text().unwrap_or_default());
