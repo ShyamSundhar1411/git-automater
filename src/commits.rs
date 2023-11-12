@@ -1,6 +1,6 @@
 use dialoguer::{{console::Style, theme::ColorfulTheme, FuzzySelect, Input }};
 use std::process::{Command,exit};
-use crate::helpers::{self, status_printer};
+use crate::helpers;
 pub struct Commit{
     description: String,
     commit_type: String,
@@ -37,12 +37,13 @@ pub fn add_files(){
     let file_name: String = Input::new().with_prompt("File Name").default(".".to_string()).interact_text().unwrap();
     if file_name != "."{
         let output = Command::new("git").arg("add").arg(file_name).output().expect("failed to add files");
-        helpers::status_printer(&output);
+        helpers::status_printer(&output); 
     }
     else{
         let output = Command::new("git").arg("add").arg(".").output().expect("failed to add files");   
-        helpers::status_printer(output);
-    }   
+        helpers::status_printer(&output); 
+    }  
+    
 }
 
 pub fn commit_function(){
@@ -60,5 +61,5 @@ pub fn commit_function(){
     );
     let commit_message = commit.to_string();
     let output = Command::new("git").arg("commit").arg("-m").arg(commit_message).output().expect("Failed to add commit message");
-    status_printer(&output);
+    helpers::status_printer(&output); 
 }
