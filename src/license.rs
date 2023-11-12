@@ -1,6 +1,7 @@
+use dialoguer::{theme::ColorfulTheme, Input};
 use serde::Deserialize;
 use reqwest::{Error, Client};
-use std::{process::{Command,exit},fs};
+use std::{process::Command,fs,io};
 
 #[derive(Deserialize,Debug)]
 pub struct License{
@@ -47,6 +48,19 @@ pub fn get_git_user_name() -> Option<String> {
     result
 }
 
-pub fn write_license_file(content: &str){
-    fs::write("./LICENSE",content);
+pub fn write_license_file(content: &str, name: &str, year: &str) -> Result<(), io::Error>{
+    let mut body  = content.to_string();
+    body = body.replace("<name of author>",&name).replace("<year>",&year).replace("[yyyy]",&year).replace("[name of copyright owner]",&name);
+    let path = "./LICENSE";
+    let output =  match fs::metadata(path).is_ok(){
+        true=>{
+            let path = Input::with_theme(&ColorfulTheme::default()).with_prompt("License Found!!. New license name (leave blank to overwrite existing)").default(path.to_string()).interact_text().unwrap();
+            fs::write(path,&body)
+        }
+        false => {
+            fs::write(path,&body)
+        }
+    };
+    output
+
 }

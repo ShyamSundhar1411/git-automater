@@ -1,5 +1,6 @@
-use dialoguer::{{console::Style, theme::ColorfulTheme, FuzzySelect, Input }};
+use dialoguer::{{console::Style, theme::ColorfulTheme,Input }};
 use crate::license;
+use chrono::{Datelike, Utc};
 use::std::process::Output;
 
 pub fn status_printer(output:&Output){
@@ -50,6 +51,8 @@ pub fn get_name() -> String {
 
     name
 }
-
-
-
+pub fn get_year() -> String{
+    let current_year = Utc::now().year();
+    let year: String = Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter year").default(current_year.to_string()).interact_text().unwrap();
+    year
+}

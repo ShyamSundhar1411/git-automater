@@ -1,8 +1,6 @@
-use dialoguer::{{console::Style, theme::ColorfulTheme, FuzzySelect, Input }};
-use std::{process::{Command,exit, Output}, collections::HashMap};
-use crate::{license::{self, LicenseContent}, branches};
-use crate::commits;
-use crate::helpers;
+use dialoguer::{{console::Style, theme::ColorfulTheme, FuzzySelect }};
+use std::{process::{Command,exit}, collections::HashMap};
+use crate::{license, branches, commits, helpers};
 pub fn prompt(){
     let items = vec!["initialize git repository","add files","commit","push","add license","clear cache","exit"];
     let selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("What do you choose?").items(&items).interact().unwrap();
@@ -15,7 +13,7 @@ pub fn prompt(){
         commits::add_files();
     }
     if items[selection] == "exit"{
-        exit(0);
+        exit_prompt();
     }
     if items[selection] == "commit"{
         commits::commit_function();
@@ -78,6 +76,21 @@ fn generate_license(){
         }
     };
     let name = helpers::get_name();
-    license::write_license_file(&license_content.body);
+    let year: String = helpers::get_year();
     
+    let _output = match license::write_license_file(&license_content.body, &name, &year){
+        Ok(_)=> println!("{}",Style::new().for_stderr().green().italic().apply_to("License created successfully")),
+        Err(err)=>{
+            let error_message = format!("Error creating license: {}", err);
+            print!("{}",Style::new().for_stderr().red().italic().apply_to(&error_message));
+            return ;
+        }
+    };
+    
+    
+}
+
+fn exit_prompt(){
+    println!("{}",Style::new().for_stderr().green().apply_to("Thanks for using me. Have a great day"));
+    exit(0);
 }

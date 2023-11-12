@@ -1,5 +1,5 @@
-use dialoguer::{{console::Style, theme::ColorfulTheme, FuzzySelect, Input }};
-use std::process::{Command,exit};
+use dialoguer::{{ theme::ColorfulTheme, FuzzySelect, Input }};
+use std::process::Command ;
 use crate::helpers;
 pub struct Commit{
     description: String,
