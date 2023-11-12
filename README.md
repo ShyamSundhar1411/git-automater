@@ -33,7 +33,7 @@
 
 ## About The Project
 
-![Screen Shot](images/screenshot.png)
+![demo](https://shyamsundhar.tixte.co/2023-11-12_18-16-40.gif)
 
 There are a lot of processes and commands that are involved in github. Remembering those takes time and indeed version controlling is an important trait for every programmer. In order to reduce the time consumption in using git in local environment, I have created this crate so that it eases the process of version controlling. This crate involves a lot of git processes.
 
