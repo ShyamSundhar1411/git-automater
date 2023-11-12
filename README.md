@@ -97,4 +97,4 @@ Contributions are what make the open source community such an amazing place to b
 
 ## License
 
-Distributed under the MIT License. See [LICENSE](https://github.com/ShyamSundhar1411/git-automater/blob/main/LICENSE.md) for more information.
+Distributed under the MIT License. See [LICENSE](https://github.com/ShyamSundhar1411/git-automater/blob/master/LICENSE) for more information.
