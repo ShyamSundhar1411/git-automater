@@ -1,4 +1,4 @@
-use dialoguer::{{ theme::ColorfulTheme, FuzzySelect, Input }};
+use dialoguer::{{ theme::ColorfulTheme, FuzzySelect, Input, console::Term}};
 use std::{process::Command,collections::HashMap};
 use crate::helpers;
 pub struct Commit{
@@ -47,19 +47,19 @@ pub fn add_files(){
 }
 
 pub fn commit_function(){
-    let conventional_commit_types = vec!["feat","fix","docs","style","refractor","perf","test","build","ci","chore","revert"];
+    let conventional_commit_types = vec!["feat","fix","docs","style","refactor","perf","test","build","ci","chore","revert"];
     let emoji_mapping: HashMap<&str, &str> = [
-        ("feat", "✨"),
-        ("fix", "🐛"),
-        ("docs", "📝"),
-        ("style", "💄"),
-        ("refactor", "♻️"),
-        ("perf", "⚡"),
-        ("test", "🚨"),
-        ("build", "🔧"),
-        ("ci", "🚀"),
-        ("chore", "🔨"),
-        ("revert", "⏪"),
+        ("feat", "\u{2728}"),   // Sparkles
+        ("fix", "\u{1F41B}"),    // Bug
+        ("docs", "\u{1F4DD}"),   // Document
+        ("style", "\u{1F484}"),  // Lipstick
+        ("refactor", "\u{1F527}"), // Triangular ruler
+        ("perf", "\u{26A1}"),     // High voltage
+        ("test", "\u{1F6A8}"),    // Police car light
+        ("build", "\u{1F527}"),   // Wrench
+        ("ci", "\u{1F680}"),      // Rocket
+        ("chore", "\u{1F528}"),   // Hammer
+        ("revert", "\u{23EA}"),   // Double arrow left
     ]
     .iter()
     .cloned()
