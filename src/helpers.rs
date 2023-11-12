@@ -6,10 +6,16 @@ pub fn status_printer(output:&Output){
     let status_out: String = String::from_utf8_lossy(&output.stdout).to_string();
     let status_err: String = String::from_utf8_lossy(&output.stderr).to_string();
     if !(status_err.is_empty()){
-        println!("Error:{}",status_err);
+        println!("{}", Style::new()
+        .for_stderr()
+        .red()
+        .apply_to(status_err));
     }
     else{
-        println!("Status:{}",status_out);
+        println!("{}", Style::new()
+        .for_stderr()
+        .green()
+        .apply_to(status_out));
     }
 }
 pub fn get_name() -> String {
