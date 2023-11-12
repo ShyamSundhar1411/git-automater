@@ -43,6 +43,7 @@ Here are few:
 * Commit
 * Push
 * Add License
+* Add .gitignore
 * Clear Cache
 * Exit Prompt
 
