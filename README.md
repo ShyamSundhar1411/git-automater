@@ -1,7 +1,7 @@
 <br/>
 <p align="center">
   <a href="https://github.com/ShyamSundhar1411/git-automater">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="https://git-scm.com/images/logos/downloads/Git-Icon-1788C.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Git Automater</h3>
