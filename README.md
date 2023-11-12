@@ -13,8 +13,6 @@
     <a href="https://github.com/ShyamSundhar1411/git-automater"><strong>Explore the docs »</strong></a>
     <br/>
     <br/>
-    <a href="https://github.com/ShyamSundhar1411/git-automater">View Demo</a>
-    .
     <a href="https://github.com/ShyamSundhar1411/git-automater/issues">Report Bug</a>
     .
     <a href="https://github.com/ShyamSundhar1411/git-automater/issues">Request Feature</a>
@@ -37,17 +35,16 @@
 
 ![Screen Shot](images/screenshot.png)
 
-There are many great README templates available on GitHub, however, I didn't find one that really suit my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need.
+There are a lot of processes and commands that are involved in github. Remembering those takes time and indeed version controlling is an important trait for every programmer. In order to reduce the time consumption in using git in local environment, I have created this crate so that it eases the process of version controlling. This crate involves a lot of git processes.
 
-Here's why:
-
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should element DRY principles to the rest of your life :smile:
-
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue.
-
-A list of commonly used resources that I find helpful are listed in the acknowledgements.
+Here are few:
+* Initialize Git Repository
+* Add Files
+* Commit
+* Push
+* Add License
+* Clear Cache
+* Exit Prompt
 
 ## Built With
 * [rust](https://www.rust-lang.org/)
@@ -64,7 +61,7 @@ This crate requires the installation of cargo package manager and rust.
 * cargo
 * rust
   
-For further more information, kindly refer the [Documentation](https://www.rust-lang.org/tools/install)
+For more information, kindly refer the [Documentation](https://www.rust-lang.org/tools/install) for installation procedures.
 
 ### Installing
 
