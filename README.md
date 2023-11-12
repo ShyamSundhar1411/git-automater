@@ -29,6 +29,7 @@
 * [Built With](#built-with)
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
+  * [Installing](#installing)
 * [Contributing](#contributing)
 * [License](#license)
 
@@ -69,13 +70,15 @@ For further more information, kindly refer the [Documentation](https://www.rust-
 #### Using Cargo
 
 ```bash
-  cargo add git-automater
+  cargo install git-automater
 ```
 
 #### Using Source
 
 ```bash
   git clone https://github.com/ShyamSundhar1411/git-automater.git
+  cd git-automater
+  cargo install --path
 ```
 ## Roadmap
 
