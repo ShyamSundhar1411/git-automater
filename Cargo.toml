@@ -2,7 +2,7 @@
 name = "git-automater"
 version = "0.1.0"
 edition = "2021"
-keywords = ["git","command-line-utilities","version-control","license-generator"]
+keywords = ["git","command-line-utility","version-control","license-generator"]
 license = "MIT"
 description = "Git Automater: Your Shortcut to Seamless Version Control!"
 
