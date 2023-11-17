@@ -50,7 +50,8 @@ pub fn get_git_user_name() -> Option<String> {
 
 pub fn write_license_file(content: &str, name: &str, year: &str) -> Result<(), io::Error>{
     let mut body  = content.to_string();
-    body = body.replace("<name of author>",&name).replace("<year>",&year).replace("[yyyy]",&year).replace("[name of copyright owner]",&name);
+    body = body.replace("<name of author>",&name).replace("<year>",&year).replace("[yyyy]",&year).replace("[name of copyright owner]",&name).replace("[ yyyy ]",&year).replace("[ name ]",&name).replace("[name]",&name);
+
     let path = "./LICENSE";
     let output =  match fs::metadata(path).is_ok(){
         true=>{
