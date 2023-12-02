@@ -1,4 +1,4 @@
-use dialoguer::{{ theme::ColorfulTheme, FuzzySelect, Input, console::Term}};
+use dialoguer::{{ theme::ColorfulTheme, FuzzySelect, Input }};
 use std::{process::Command,collections::HashMap};
 use crate::helpers;
 pub struct Commit{

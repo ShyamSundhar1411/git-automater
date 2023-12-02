@@ -2,34 +2,40 @@ use dialoguer::{{console::Style, theme::ColorfulTheme, FuzzySelect }};
 use std::{process::{Command,exit}, collections::HashMap};
 use crate::{license, branches, commits, helpers, gitignore};
 pub fn prompt(){
-    let items = vec!["initialize git repository","add files","commit","push","add license","add .gitignore","clear cache","exit"];
+    let items = vec!["Initialize Git Repository","Add Files","Commit","Push","Add License","Add .gitignore","Branch Manager","Clear Cache","Exit"];
     let selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("What do you choose?").items(&items).interact().unwrap();
     println!("{}",items[selection]);
 
-    if items[selection] == "initialize git repository"{
+    if selection == 0{
         initialize();
     }
-    if items[selection] == "add files"{
+    if selection == 1{
         commits::add_files();
     }
-    if items[selection] == "exit"{
-        exit_prompt();
-    }
-    if items[selection] == "commit"{
+    
+    if selection == 2{
         commits::commit_function();
     }
-    if items[selection] == "push"{
+    if selection == 3{
         push();
     }
-    if items[selection] == "clear cache"{
-        clear_cache();
-    }
-    if items[selection] == "add license"{
+    if selection == 4{
         generate_license();
     }
-
-    if items[selection] == "add .gitignore"{
+    if selection == 5{
         gitignore::generate_gitignore();
+    }
+
+    if selection == 6{
+        branches::branch_manager();
+    }
+
+    if selection == 7{
+        clear_cache();
+    }
+    
+    if selection == 8{
+        exit_prompt();
     }
 }
 
