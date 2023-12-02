@@ -44,6 +44,7 @@ Here are few:
 * Push
 * Add License
 * Add .gitignore
+* Branch Manager
 * Clear Cache
 * Exit Prompt
 
