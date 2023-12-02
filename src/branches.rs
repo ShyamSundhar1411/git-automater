@@ -15,6 +15,14 @@ pub fn get_remotes() -> Vec<String>{
     remote_list
 }
 
+pub fn checkout_branch(){
+    let branch_list = get_branches();
+    let branch_option = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select Branch to Checkout").items(&branch_list).interact().unwrap();
+    let selected_branch = &branch_list[branch_option];
+    let output = Command::new("git").arg("checkout").arg(&selected_branch).output().expect("Failed to checkout branch");
+    helpers::status_printer(&output);
+}
+
 pub fn create_branch(){
     let branch_name: String = Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter Branch Name").interact_text().unwrap();
     let output = Command::new("git").arg("branch").arg(&branch_name).output().expect("Failed to create branch");
@@ -30,6 +38,23 @@ pub fn delete_branch(){
     let output = Command::new("git").arg("branch").arg("-D").arg(&selected_branch).output().expect("Failed to delete branch");
     helpers::status_printer(&output);
 }
+
+pub fn merge_branch(){
+    checkout_branch();
+    let branch_list = get_branches();
+    let branch_options = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select Branch to Merge").items(&branch_list).interact().unwrap();
+    let selected_branch = &branch_list[branch_options];
+    let output = Command::new("git").arg("merge").arg(&selected_branch).output().expect("Faield to merge branch");
+    helpers::status_printer(&output);
+}
+
+pub fn pull_branch(){
+    let remote_list = get_remotes();
+    let remote_selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select Remote Repo").items(&remote_list).interact().unwrap();
+    let remote = &remote_list[remote_selection];
+    let output = Command::new("git").arg("pull").arg(&remote).output().expect("Failed to pull changes");
+    helpers::status_printer(&output);
+}
 pub fn view_branches(){
     let output  = get_branches();
         if output.is_empty(){
@@ -40,22 +65,7 @@ pub fn view_branches(){
             println!("{}",Style::new().for_stdout().green().apply_to(&branch));
         }
 }
-pub fn checkout_branch(){
-    let branch_list = get_branches();
-    let branch_option = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select Branch to Checkout").items(&branch_list).interact().unwrap();
-    let selected_branch = &branch_list[branch_option];
-    let output = Command::new("git").arg("checkout").arg(&selected_branch).output().expect("Failed to checkout branch");
-    helpers::status_printer(&output);
-}
 
-pub fn merge_branch(){
-    checkout_branch();
-    let branch_list = get_branches();
-    let branch_options = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select Branch to Merge").items(&branch_list).interact().unwrap();
-    let selected_branch = &branch_list[branch_options];
-    let output = Command::new("git").arg("merge").arg(&selected_branch).output().expect("Faield to merge branch");
-    helpers::status_printer(&output);
-}
 pub fn branch_manager(){
     let branch_prompts = ["Checkout", "Create Branch", "Delete Branch", "Merge Branch", "Pull Branch","View Branches"];
     let branch_prompt_selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select Branch Operation").items(&branch_prompts).interact().unwrap();
@@ -71,6 +81,9 @@ pub fn branch_manager(){
     }
     if branch_prompt_selection == 3 {
         merge_branch();
+    }
+    if branch_prompt_selection == 4{
+        pull_branch();
     }
     if branch_prompt_selection == 5{
         view_branches();
