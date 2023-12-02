@@ -47,6 +47,15 @@ pub fn checkout_branch(){
     let output = Command::new("git").arg("checkout").arg(&selected_branch).output().expect("Failed to checkout branch");
     helpers::status_printer(&output);
 }
+
+pub fn merge_branch(){
+    checkout_branch();
+    let branch_list = get_branches();
+    let branch_options = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select Branch to Merge").items(&branch_list).interact().unwrap();
+    let selected_branch = &branch_list[branch_options];
+    let output = Command::new("git").arg("merge").arg(&selected_branch).output().expect("Faield to merge branch");
+    helpers::status_printer(&output);
+}
 pub fn branch_manager(){
     let branch_prompts = ["Checkout", "Create Branch", "Delete Branch", "Merge Branch", "Pull Branch","View Branches"];
     let branch_prompt_selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select Branch Operation").items(&branch_prompts).interact().unwrap();
@@ -59,6 +68,9 @@ pub fn branch_manager(){
     }
     if branch_prompt_selection == 2{
         delete_branch();
+    }
+    if branch_prompt_selection == 3 {
+        merge_branch();
     }
     if branch_prompt_selection == 5{
         view_branches();
