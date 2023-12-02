@@ -6,20 +6,29 @@ pub struct Commit{
     commit_type: String,
     body: Option<String>,
     footer: Option<String>,
+    file_name: Option<String>
 }
 impl Commit{
-    pub fn new(commit_type: &str, description: &str,body: Option<&str>, footer: Option<&str>) -> Self{
+    pub fn new(commit_type: &str, description: &str,body: Option<&str>, footer: Option<&str>, file_name: Option<&str>) -> Self{
         Commit{
             commit_type: commit_type.to_string(),
             description: description.to_string(),
             body: body.map(String::from),
             footer: footer.map(String::from),
+            file_name: file_name.map(String::from),
         }
     }
     pub fn to_string(&self) -> String{
         let mut commit_message = String::new();
-        commit_message.push_str(&format!("{}: {}", self.commit_type, self.description));
-
+        commit_message.push_str(&format!("{}",self.commit_type));
+        if let Some(ref file_name) = &self.file_name {
+            if !file_name.is_empty() {
+                commit_message.push_str("(");
+                commit_message.push_str(file_name);
+                commit_message.push_str(")");
+            }
+        };
+        commit_message.push_str(&format!(": {}",self.description));
         if let Some(ref body) = self.body {
             commit_message.push_str("\n\n");
             commit_message.push_str(body);
@@ -81,6 +90,9 @@ pub fn commit_function(){
     .items(&formatted_options)
     .interact()
     .expect("Failed to read selection");
+
+// Prompt the user for a short description of the commit    
+    let file_name: Option<String> = Some(Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter file name or class name (default will be blank)").allow_empty(true).interact_text().unwrap());
     let description: String = Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter a short description").interact_text().unwrap();
     let commit_type = conventional_commit_types[type_select];
     let body: Option<String> = Some(Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter brief description").allow_empty(true).interact_text().unwrap_or_default());
@@ -90,6 +102,7 @@ pub fn commit_function(){
         &description,
         body.as_deref(),
         footer.as_deref(),
+        file_name.as_deref(),
     );
     let commit_message = commit.to_string();
     let output = Command::new("git").arg("commit").arg("-m").arg(commit_message).output().expect("Failed to add commit message");
