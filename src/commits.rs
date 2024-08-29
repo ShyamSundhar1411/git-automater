@@ -1,5 +1,6 @@
 use dialoguer::{{ theme::ColorfulTheme, FuzzySelect, Input }};
-use std::{process::Command,collections::HashMap};
+use indicatif::{ProgressBar, ProgressStyle};
+use std::{process::Command,collections::HashMap, thread, time::Duration};
 use crate::helpers;
 pub struct Commit{
     description: String,
@@ -44,14 +45,30 @@ impl Commit{
 }
 pub fn add_files(){
     let file_name: String = Input::new().with_prompt("File Path").default(".".to_string()).interact_text().unwrap();
-    if file_name != "."{
-        let output = Command::new("git").arg("add").arg(file_name).output().expect("failed to add files");
-        helpers::status_printer(&output); 
+    let pb = ProgressBar::new(100);
+    pb.set_style(ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{bar:40.green/white}] {pos:>7}/{len:7} ({eta})").unwrap());
+    
+    for _ in 0..100 {
+        pb.inc(1);
+        std::thread::sleep(std::time::Duration::from_millis(50));
     }
-    else{
-        let output = Command::new("git").arg("add").arg(".").output().expect("failed to add files");   
-        helpers::status_printer(&output); 
-    }  
+    
+    
+    let output = if file_name != "." {
+        Command::new("git")
+            .arg("add")
+            .arg(&file_name)
+            .output()
+            .expect("failed to add files")
+    } else {
+        Command::new("git")
+            .arg("add")
+            .arg(".")
+            .output()
+            .expect("failed to add files")
+    };
+    helpers::status_printer(&output); 
+    pb.set_message("Files added successfully");
     
 }
 
