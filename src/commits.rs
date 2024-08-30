@@ -1,6 +1,6 @@
 use dialoguer::{{ theme::ColorfulTheme, FuzzySelect, Input }};
 use indicatif::{ProgressBar, ProgressStyle};
-use std::{process::Command,collections::HashMap, thread, time::Duration};
+use std::{process::Command,collections::HashMap};
 use crate::helpers;
 pub struct Commit{
     description: String,
@@ -101,14 +101,12 @@ pub fn commit_function(){
     })
     .collect();
 
-// Display the custom formatted list with emojis using FuzzySelect
     let type_select = FuzzySelect::new()
     .with_prompt("Select a conventional commit type")
     .items(&formatted_options)
     .interact()
     .expect("Failed to read selection");
 
-// Prompt the user for a short description of the commit    
     let file_name: Option<String> = Some(Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter file name or class name (default will be blank)").allow_empty(true).interact_text().unwrap());
     let description: String = Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter a short description").interact_text().unwrap();
     let commit_type = conventional_commit_types[type_select];

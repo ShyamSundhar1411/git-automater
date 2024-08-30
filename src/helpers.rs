@@ -1,5 +1,5 @@
-use dialoguer::{{console::Style, theme::ColorfulTheme,Input }};
 use crate::license;
+use inquire::{Text, CustomType};
 use chrono::{Datelike, Utc};
 use::std::process::Output;
 
@@ -7,16 +7,9 @@ pub fn status_printer(output:&Output){
     let status_out: String = String::from_utf8_lossy(&output.stdout).to_string();
     let status_err: String = String::from_utf8_lossy(&output.stderr).to_string();
     if !(status_err.is_empty()){
-        println!("{}", Style::new()
-        .for_stderr()
-        .red()
-        .apply_to(status_err));
-    }
-    else{
-        println!("{}", Style::new()
-        .for_stderr()
-        .green()
-        .apply_to(status_out));
+        println!("\x1b[31m{}\x1b[0m", status_err);
+    }else{
+        println!("\x1b[32m{}\x1b[0m", status_out);
     }
 }
 pub fn get_name() -> String {
@@ -31,20 +24,15 @@ pub fn get_name() -> String {
                 }
             }
 
-            let name: String = Input::with_theme(&ColorfulTheme::default())
-                .with_prompt("Enter Author Name")
-                .default(name)
-                .interact_text()
-                .unwrap();
+            let name: String = Text::new("Enter Author  Name")
+            .with_default(&name)
+            .prompt()
+            .unwrap();
 
             name
         }
         None => {
-            let input: String = Input::with_theme(&ColorfulTheme::default())
-                .with_prompt("Name")
-                .interact_text()
-                .unwrap();
-
+            let input: String = Text::new("Enter Author  Name").prompt().unwrap();
             input
         }
     };
@@ -53,6 +41,10 @@ pub fn get_name() -> String {
 }
 pub fn get_year() -> String{
     let current_year = Utc::now().year();
-    let year: String = Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter year").default(current_year.to_string()).interact_text().unwrap();
+    let year: String = CustomType::new("Enter year")
+    .with_default(current_year)
+    .prompt()
+    .unwrap()
+    .to_string();
     year
 }

@@ -12,8 +12,10 @@ description = "Git Automater: Your Shortcut to Seamless Version Control!"
 repository = "ShyamSundhar1411/git-automater"
 [dependencies]
 chrono = "0.4.31"
+console = "0.15.8"
 dialoguer = { version = "0.11.0", features = ["fuzzy-select", "completion"] }
 emojis = "0.6.1"
+indexmap = "2.4.0"
 indicatif = "0.17.8"
 inquire = { version = "0.7.5", features = ["editor", "console", "chrono"] }
 reqwest = { version = "0.11.22", features = ["json", "blocking"] }
