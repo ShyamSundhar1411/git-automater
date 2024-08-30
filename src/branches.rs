@@ -1,6 +1,8 @@
 use std::process::Command;
-use dialoguer::{theme::ColorfulTheme, FuzzySelect, console::Style,Input};
-use crate::helpers;
+use console::Style;
+use indexmap::IndexMap;
+use inquire::{InquireError,Text};
+use crate::helpers::{display_options,status_printer};
 pub fn get_branches() -> Vec<String>{
     let branches = Command::new("git").arg("branch").arg("--format").arg("%(refname:short)").output().expect("Failed to fetch branches");
     let branch_output = std::str::from_utf8(&branches.stdout).expect("Failed to parse branch output");
@@ -16,44 +18,66 @@ pub fn get_remotes() -> Vec<String>{
 }
 
 pub fn checkout_branch(){
-    let branch_list = get_branches();
-    let branch_option = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select Branch to Checkout").items(&branch_list).interact().unwrap();
-    let selected_branch = &branch_list[branch_option];
+    let selected_branch = match display_options("Select Branch to Checkout",get_branches()){
+        Ok(branch) => branch,
+        Err(_) => {
+            eprint!("Something went wrong");
+            return ;
+        }
+
+    }; 
+   
     let output = Command::new("git").arg("checkout").arg(&selected_branch).output().expect("Failed to checkout branch");
-    helpers::status_printer(&output);
+    status_printer(&output);
 }
 
 pub fn create_branch(){
-    let branch_name: String = Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter Branch Name").interact_text().unwrap();
+    let branch_name: String = Text::new("Enter Branch Name:").prompt().unwrap();
     let output = Command::new("git").arg("branch").arg(&branch_name).output().expect("Failed to create branch");
-    helpers::status_printer(&output);
+    status_printer(&output);
     println!("{}",Style::new().for_stdout().green().apply_to("Branch Created"));
 
 }
 
 pub fn delete_branch(){
-    let branch_list = get_branches();
-    let branch_option = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select Branch to Delete").items(&branch_list).interact().unwrap();
-    let selected_branch = &branch_list[branch_option];
+    let selected_branch = match display_options("Select Branch to Delete",get_branches()){
+        Ok(branch) => branch,
+        Err(_) => {
+            eprint!("Something went wrong");
+            return ;
+        }
+
+    };
     let output = Command::new("git").arg("branch").arg("-D").arg(&selected_branch).output().expect("Failed to delete branch");
-    helpers::status_printer(&output);
+    status_printer(&output);
 }
 
 pub fn merge_branch(){
     checkout_branch();
-    let branch_list = get_branches();
-    let branch_options = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select Branch to Merge").items(&branch_list).interact().unwrap();
-    let selected_branch = &branch_list[branch_options];
+    let selected_branch = match display_options("Select Branch to Merge",get_branches()){
+        Ok(branch) => branch,
+        Err(_) => {
+            eprint!("Something went wrong");
+            return ;
+        }
+
+    };
     let output = Command::new("git").arg("merge").arg(&selected_branch).output().expect("Faield to merge branch");
-    helpers::status_printer(&output);
+    status_printer(&output);
 }
 
 pub fn pull_branch(){
-    let remote_list = get_remotes();
-    let remote_selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select Remote Repo").items(&remote_list).interact().unwrap();
-    let remote = &remote_list[remote_selection];
-    let output = Command::new("git").arg("pull").arg(&remote).output().expect("Failed to pull changes");
-    helpers::status_printer(&output);
+    let selected_remote = match display_options("Select Remote Repo", get_remotes()){
+        Ok(remote) => remote,
+        Err(_) => {
+            eprint!("Something went wrong");
+            return ;
+        }
+
+    }; 
+
+    let output = Command::new("git").arg("pull").arg(&selected_remote).output().expect("Failed to pull changes");
+    status_printer(&output);
 }
 pub fn view_branches(){
     let output  = get_branches();
@@ -67,25 +91,24 @@ pub fn view_branches(){
 }
 
 pub fn branch_manager(){
-    let branch_prompts = ["Checkout", "Create Branch", "Delete Branch", "Merge Branch", "Pull Branch","View Branches"];
-    let branch_prompt_selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("Select Branch Operation").items(&branch_prompts).interact().unwrap();
+    let branch_prompts: IndexMap<&str,fn()> = IndexMap::from([
+        ("Checkout", checkout_branch as fn()),
+        ("Create Branch", create_branch as fn()),
+        ("Delete Branch", delete_branch as fn()),
+        ("Merge Branch", merge_branch as fn()),
+        ("Pull Branch", pull_branch as fn()),
+        ("View Branches", view_branches as fn())
+    ]);
+    let branch_actions: Vec<String> = branch_prompts.keys().map(|&s| s.to_string()).collect();
+    let branch_prompt_selection: Result<String,InquireError> = display_options("Select Branch Action", branch_actions);
+    match branch_prompt_selection{
+        Ok(selection) => {
+            
+            if let Some(action) = branch_prompts.get(selection.as_str()){
+                action();
+            }
+        }
+        Err(_) => eprintln!("Error")
+    }
 
-    if branch_prompt_selection == 0{
-        checkout_branch();
-    }
-    if branch_prompt_selection == 1{
-        create_branch();
-    }
-    if branch_prompt_selection == 2{
-        delete_branch();
-    }
-    if branch_prompt_selection == 3 {
-        merge_branch();
-    }
-    if branch_prompt_selection == 4{
-        pull_branch();
-    }
-    if branch_prompt_selection == 5{
-        view_branches();
-    }
 }

@@ -1,8 +1,8 @@
-use inquire::{error::InquireError, Select};
+use inquire::error::InquireError;
 use console::Style;
 use std::{process::{exit, Command},collections::HashMap};
 use indexmap::IndexMap;
-use crate::{helpers,commits,branches,gitignore,license};
+use crate::{branches, commits, gitignore, helpers::{self, display_options}, license};
 pub fn prompt(){
     let actions: IndexMap<&str,fn()> = IndexMap::from([
         ("Initialize Git Repository",initialize as fn()),
@@ -15,15 +15,16 @@ pub fn prompt(){
         ("Clear Cache", clear_cache as fn()),
         ("Exit",exit_prompt as fn())
     ]);
-    let selection: Result<&str, InquireError> = Select::new("Select an option:", actions.keys().cloned().collect::<Vec<&str>>()).prompt();
-    match selection{
-        Ok(choice) => {
+    let prompt_actions: Vec<String> = actions.keys().cloned().map(|s| s.to_string()).collect();
+    let prompt_selection: Result<String, InquireError> = display_options("Select action", prompt_actions);
+    match prompt_selection{
+        Ok(selection) => {
             
-            if let Some(action) = actions.get(choice){
+            if let Some(action) = actions.get(selection.as_str()){
                 action();
             }
         }
-        Err(_) => println!("Something went wrong"),
+        Err(_) => eprintln!("Something went wrong"),
     }
 }
 
@@ -35,7 +36,7 @@ fn initialize(){
 
 fn push(){
     let branch_list: Vec<String> = branches::get_branches();
-    let branch_selection = Select::new("Select branch:", branch_list).prompt();
+    let branch_selection = display_options("Select branch", branch_list);
     let branch = match branch_selection{
         Ok(branch) => branch.to_string(),
         Err(_) => {
@@ -44,7 +45,7 @@ fn push(){
         },
     };
     let remote_list = branches::get_remotes();
-    let remote_selection = Select::new("Select remote:", remote_list).prompt();
+    let remote_selection = display_options("Select remote", remote_list);
     let alias = match remote_selection{
         Ok(remote) => remote.to_string(),
         Err(_) => {
@@ -75,15 +76,15 @@ fn generate_license(){
         .map(|license| (license.name.clone(), license.key.clone()))
         .collect();
 
-    let license_names: Vec<&String> = licenses.iter().map(|license| &license.name).collect();
-    let selected_license = match Select::new("Select a license:", license_names).prompt(){
+    let license_names: Vec<String> = licenses.iter().map(|license| license.name.to_string()).collect();
+    let selected_license = match display_options("Select License",license_names){
         Ok(license) => license,
         Err(_) => {
             println!("Something went wrong");
             return;
         }
     };
-    let selected_license_key = license_map.get(selected_license).cloned().unwrap_or_default();
+    let selected_license_key = license_map.get(&selected_license).cloned().unwrap_or_default();
     let license_content = match license::fetch_license_content(&selected_license_key){
         Ok(license_content) => license_content,
         Err(err) => {

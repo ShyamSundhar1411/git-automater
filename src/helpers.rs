@@ -2,6 +2,7 @@ use crate::license;
 use inquire::{Text, CustomType};
 use chrono::{Datelike, Utc};
 use::std::process::Output;
+use::inquire::{Select, InquireError};
 
 pub fn status_printer(output:&Output){
     let status_out: String = String::from_utf8_lossy(&output.stdout).to_string();
@@ -47,4 +48,8 @@ pub fn get_year() -> String{
     .unwrap()
     .to_string();
     year
+}
+pub fn display_options(prompt: &str,items: Vec<String>) -> Result<String,InquireError>{
+    let branch_options = Select::new(prompt,items).prompt();
+    return branch_options;
 }
