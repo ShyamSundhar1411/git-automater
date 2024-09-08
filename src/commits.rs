@@ -1,4 +1,4 @@
-use inquire::{Text,validator::Validation,error::InquireError};
+use inquire::Text;
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{process::Command,collections::HashMap};
 use crate::helpers::{self, display_options};
@@ -108,31 +108,30 @@ pub fn commit_function(){
         Err(_) => return,
     };
 
-
+    // Optional fields
     let file_name: Option<String> = Text::new("Enter file name or class name (default will be blank)")
         .with_default("")
         .prompt()
         .ok();
 
-  
-        let description = loop {
-          
-            let result: Result<String, InquireError> = Text::new("Enter a short description")
-                .with_validator(|input: &str| {
-                    if input.is_empty() {
-                        Err("Description cannot be empty".into()) 
-                    } else {
-                        Ok(Validation::Valid)
-                    }
-                })
-                .prompt();
-    
-            // Check the result
-            match result {
-                Ok(desc) => break desc,  
-                Err(_) => println!("Invalid input. Please try again."),
+    // Non-skippable field with validation
+    let description = loop{
+        let result = Text::new("Enter a short description").prompt();
+        match result{
+            Ok(input) => {
+                if input.trim().is_empty(){
+                    println!("Description cannot be empty");
+                    continue;
+                }
+                break input;
             }
-        };
+            Err(err) => {
+                eprintln!("An error occurred: {:?}", err);
+                std::process::exit(1); 
+            }
+        }
+    };
+
 
     let body: Option<String> = Text::new("Enter brief description (optional)")
         .with_default("")
