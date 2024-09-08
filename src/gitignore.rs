@@ -1,5 +1,6 @@
 use reqwest;
-use dialoguer::{{console::Style, theme::ColorfulTheme, Input }};
+use console::Style;
+use inquire::Text;
 use std::{fs,io};
 
 #[tokio::main]
@@ -14,7 +15,7 @@ fn write_gitignore_file(content: &str) -> Result<(),io::Error>{
     let body = content.to_string();
     let output = match fs::metadata(path).is_ok(){
         true=>{
-            let path = Input::with_theme(&ColorfulTheme::default()).with_prompt("Gitignore Found!!. New Gitignore path (leave blank to overwrite existing)").default(path.to_string()).interact_text().unwrap();
+            let path = Text::new("Gitignore Found!!. New Gitignore path (leave blank to overwrite existing)").with_default(path).prompt().unwrap();
             fs::write(path,&body)
         }
         false=>{
@@ -24,10 +25,7 @@ fn write_gitignore_file(content: &str) -> Result<(),io::Error>{
     output
 }
 pub fn generate_gitignore(){
-    let languages_input: String = Input::new()
-        .with_prompt("Enter languages (comma-separated)")
-        .interact_text()
-        .expect("Failed to read input");
+    let languages_input: String = Text::new("Enter languages (comma-separated)").prompt().unwrap();
     let languages: Vec<&str> = languages_input.split(',').map(|s| s.trim()).collect();
     if languages.is_empty() {
         eprintln!("No languages provided. Exiting.");

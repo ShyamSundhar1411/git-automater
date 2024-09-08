@@ -1,8 +1,7 @@
-use inquire::{Text,validator::Validation};
+use inquire::{Text,validator::Validation,error::InquireError};
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{process::Command,collections::HashMap};
 use crate::helpers::{self, display_options};
-use std::error::Error;
 pub struct Commit{
     description: String,
     commit_type: String,
@@ -116,16 +115,24 @@ pub fn commit_function(){
         .ok();
 
   
-    let description: String = Text::new("Enter a short description")
-        .with_validator(|input: &str| {
-            if input.is_empty() {
-                Err(Box::<dyn Error + Send + Sync>::from("Description cannot be empty"))
-            } else {
-                Ok(Validation::Valid)
+        let description = loop {
+          
+            let result: Result<String, InquireError> = Text::new("Enter a short description")
+                .with_validator(|input: &str| {
+                    if input.is_empty() {
+                        Err("Description cannot be empty".into()) 
+                    } else {
+                        Ok(Validation::Valid)
+                    }
+                })
+                .prompt();
+    
+            // Check the result
+            match result {
+                Ok(desc) => break desc,  
+                Err(_) => println!("Invalid input. Please try again."),
             }
-        })
-        .prompt()
-        .unwrap();
+        };
 
     let body: Option<String> = Text::new("Enter brief description (optional)")
         .with_default("")

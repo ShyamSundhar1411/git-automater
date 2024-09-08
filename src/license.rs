@@ -1,4 +1,4 @@
-use dialoguer::{theme::ColorfulTheme, Input};
+use inquire::Text;
 use serde::Deserialize;
 use reqwest::{Error, Client};
 use std::{process::Command,fs,io};
@@ -57,7 +57,7 @@ pub fn write_license_file(content: &str, name: &str, year: &str) -> Result<(), i
     let path = "./LICENSE";
     let output =  match fs::metadata(path).is_ok(){
         true=>{
-            let path = Input::with_theme(&ColorfulTheme::default()).with_prompt("License Found!!. New license name (leave blank to overwrite existing)").default(path.to_string()).interact_text().unwrap();
+            let path = Text::new("License Found!!. New license name (leave blank to overwrite existing)").with_default(path).prompt().unwrap();
             fs::write(path,&body)
         }
         false => {
