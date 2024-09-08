@@ -1,7 +1,8 @@
-use inquire::{Text,CustomType};
+use inquire::{Text,validator::Validation};
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{process::Command,collections::HashMap};
 use crate::helpers::{self, display_options};
+use std::error::Error;
 pub struct Commit{
     description: String,
     commit_type: String,
@@ -50,7 +51,7 @@ pub fn add_files(){
     
     for _ in 0..100 {
         pb.inc(1);
-        std::thread::sleep(std::time::Duration::from_millis(50));
+        std::thread::sleep(std::time::Duration::from_millis(5));
     }
     
     
@@ -73,43 +74,68 @@ pub fn add_files(){
 }
 
 pub fn commit_function(){
-    let conventional_commit_types = vec!["feat","fix","docs","style","refactor","perf","test","build","ci","chore","revert"];
+    let conventional_commit_types = vec![
+        "feat", "fix", "docs", "style", "refactor", "perf", "test", 
+        "build", "ci", "chore", "revert"
+    ];
+
     let emoji_mapping: HashMap<&str, &str> = [
-        ("feat", "\u{2728}"),   // Sparkles
-        ("fix", "\u{1F41B}"),    // Bug
-        ("docs", "\u{1F4DD}"),   // Document
-        ("style", "\u{1F484}"),  // Lipstick
-        ("refactor", "\u{1F527}"), // Triangular ruler
+        ("feat", "\u{2728}"),     // Sparkles
+        ("fix", "\u{1F41B}"),     // Bug
+        ("docs", "\u{1F4DD}"),    // Document
+        ("style", "\u{1F484}"),   // Lipstick
+        ("refactor", "\u{1F527}"),// Triangular ruler
         ("perf", "\u{26A1}"),     // High voltage
         ("test", "\u{1F6A8}"),    // Police car light
         ("build", "\u{1F527}"),   // Wrench
         ("ci", "\u{1F680}"),      // Rocket
         ("chore", "\u{1F528}"),   // Hammer
         ("revert", "\u{23EA}"),   // Double arrow left
-    ]
-    .iter()
-    .cloned()
-    .collect();
+    ].iter().cloned().collect();
+
     let formatted_options: Vec<String> = conventional_commit_types
-    .iter()
-    .map(|commit_type| {
-        if let Some(emoji) = emoji_mapping.get(commit_type) {
-            format!("{} ({})", commit_type, emoji)
-        } else {
-            commit_type.to_string()
-        }
-    })
-    .collect();
-    let commit_type = match display_options("Select a commit type",formatted_options){
+        .iter()
+        .map(|commit_type| {
+            if let Some(emoji) = emoji_mapping.get(commit_type) {
+                format!("{} ({})", commit_type, emoji)
+            } else {
+                commit_type.to_string()
+            }
+        })
+        .collect();
+
+    let commit_type = match display_options("Select a commit type", formatted_options) {
         Ok(commit_type) => commit_type,
         Err(_) => return,
     };
 
-    
-    let file_name: Option<String> = Some(Text::new("Enter file name or class name (default will be blank)").with_default("").prompt().unwrap_or_default());
-    let description: String = Text::new("Enter a short description").with_default("").prompt().unwrap_or_default();
-    let body: Option<String> = Some(Text::new("Enter brief description").with_default("").prompt().unwrap_or_default());
-    let footer: Option<String> = Some(Text::new("Enter footer").with_default("").prompt().unwrap_or_default());
+
+    let file_name: Option<String> = Text::new("Enter file name or class name (default will be blank)")
+        .with_default("")
+        .prompt()
+        .ok();
+
+  
+    let description: String = Text::new("Enter a short description")
+        .with_validator(|input: &str| {
+            if input.is_empty() {
+                Err(Box::<dyn Error + Send + Sync>::from("Description cannot be empty"))
+            } else {
+                Ok(Validation::Valid)
+            }
+        })
+        .prompt()
+        .unwrap();
+
+    let body: Option<String> = Text::new("Enter brief description (optional)")
+        .with_default("")
+        .prompt()
+        .ok();
+    let footer: Option<String> = Text::new("Enter footer (optional)")
+        .with_default("")
+        .prompt()
+        .ok();
+
     let commit = Commit::new(
         commit_type.as_str(),
         &description,
@@ -117,7 +143,31 @@ pub fn commit_function(){
         footer.as_deref(),
         file_name.as_deref(),
     );
+
     let commit_message = commit.to_string();
-    let output = Command::new("git").arg("commit").arg("-m").arg(commit_message).output().expect("Failed to add commit message");
-    helpers::status_printer(&output); 
+
+    // Execute the Git command
+    let output = Command::new("git")
+        .arg("commit")
+        .arg("-m")
+        .arg(commit_message)
+        .output()
+        .expect("Failed to add commit message");
+
+    // Show a progress bar
+    let pb = ProgressBar::new(100);
+    pb.set_style(
+        ProgressStyle::with_template(
+            "{spinner:.green} [{elapsed_precise}] [{bar:40.green/white}] {pos:>7}/{len:7} ({eta})"
+        ).unwrap()
+    );
+
+    for _ in 0..100 {
+        pb.inc(1);
+        std::thread::sleep(std::time::Duration::from_millis(5));
+    }
+
+    pb.finish_with_message("Commit created");
+
+    helpers::status_printer(&output);
 }
