@@ -1,7 +1,7 @@
-use dialoguer::{{ theme::ColorfulTheme, FuzzySelect, Input }};
+use inquire::{Text,CustomType};
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{process::Command,collections::HashMap};
-use crate::helpers;
+use crate::helpers::{self, display_options};
 pub struct Commit{
     description: String,
     commit_type: String,
@@ -44,7 +44,7 @@ impl Commit{
     }
 }
 pub fn add_files(){
-    let file_name: String = Input::new().with_prompt("File Path").default(".".to_string()).interact_text().unwrap();
+    let file_name: String = Text::new("File path").with_default(".").prompt().unwrap();
     let pb = ProgressBar::new(100);
     pb.set_style(ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{bar:40.green/white}] {pos:>7}/{len:7} ({eta})").unwrap());
     
@@ -100,20 +100,18 @@ pub fn commit_function(){
         }
     })
     .collect();
+    let commit_type = match display_options("Select a commit type",formatted_options){
+        Ok(commit_type) => commit_type,
+        Err(_) => return,
+    };
 
-    let type_select = FuzzySelect::new()
-    .with_prompt("Select a conventional commit type")
-    .items(&formatted_options)
-    .interact()
-    .expect("Failed to read selection");
-
-    let file_name: Option<String> = Some(Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter file name or class name (default will be blank)").allow_empty(true).interact_text().unwrap());
-    let description: String = Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter a short description").interact_text().unwrap();
-    let commit_type = conventional_commit_types[type_select];
-    let body: Option<String> = Some(Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter brief description").allow_empty(true).interact_text().unwrap_or_default());
-    let footer: Option<String> = Some(Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter footer").allow_empty(true).interact_text().unwrap_or_default());
+    
+    let file_name: Option<String> = Some(Text::new("Enter file name or class name (default will be blank)").with_default("").prompt().unwrap_or_default());
+    let description: String = Text::new("Enter a short description").with_default("").prompt().unwrap_or_default();
+    let body: Option<String> = Some(Text::new("Enter brief description").with_default("").prompt().unwrap_or_default());
+    let footer: Option<String> = Some(Text::new("Enter footer").with_default("").prompt().unwrap_or_default());
     let commit = Commit::new(
-        commit_type,
+        commit_type.as_str(),
         &description,
         body.as_deref(),
         footer.as_deref(),
