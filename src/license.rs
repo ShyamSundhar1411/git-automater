@@ -2,6 +2,7 @@ use inquire::Text;
 use serde::Deserialize;
 use indicatif::{ProgressBar, ProgressStyle};
 use reqwest::{Error, Client};
+use tokio::time::{sleep, Duration};
 use std::{process::Command,fs,io};
 
 #[derive(Deserialize,Debug)]
@@ -28,12 +29,20 @@ pub async fn fetch_licenses() -> Result<Vec<License>, Error> {
     let response = client.get(url).header(reqwest::header::USER_AGENT,user_agent).send().await?;
     let licenses: Vec<License> = response.json().await?;
     let pb = ProgressBar::new(100);
-    pb.set_style(ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{bar:40.green/white}] {pos:>7}/{len:7} ({eta})").unwrap());
+    pb.set_style(
+        ProgressStyle::with_template(
+            "{spinner:.green} [{elapsed_precise}] [{bar:40.green/white}] {pos:>7}/{len:7} ({eta})",
+        )
+        .unwrap(),
+    );
     pb.set_message("Fetching Available Licenses");
+
     for _ in 0..100 {
         pb.inc(1);
-        std::thread::sleep(std::time::Duration::from_millis(5));
+        sleep(Duration::from_millis(5)).await; // non-blocking sleep
     }
+    pb.finish_with_message("Done fetching licenses!");
+
     Ok(licenses)
 }
 
