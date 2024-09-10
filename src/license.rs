@@ -1,5 +1,6 @@
 use inquire::Text;
 use serde::Deserialize;
+use indicatif::{ProgressBar, ProgressStyle};
 use reqwest::{Error, Client};
 use std::{process::Command,fs,io};
 
@@ -26,6 +27,13 @@ pub async fn fetch_licenses() -> Result<Vec<License>, Error> {
     let user_agent = "git-automater";
     let response = client.get(url).header(reqwest::header::USER_AGENT,user_agent).send().await?;
     let licenses: Vec<License> = response.json().await?;
+    let pb = ProgressBar::new(100);
+    pb.set_style(ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{bar:40.green/white}] {pos:>7}/{len:7} ({eta})").unwrap());
+    pb.set_message("Fetching Available Licenses");
+    for _ in 0..100 {
+        pb.inc(1);
+        std::thread::sleep(std::time::Duration::from_millis(5));
+    }
     Ok(licenses)
 }
 
@@ -35,6 +43,13 @@ pub async fn fetch_license_content(license: &String) -> Result<LicenseContent,Er
     let url = format!("https://api.github.com/licenses/{}",license);
     let user_agent = "git-automater";
     let response = client.get(url).header(reqwest::header::USER_AGENT,user_agent).send().await?;
+    let pb = ProgressBar::new(100);
+    pb.set_style(ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{bar:40.green/white}] {pos:>7}/{len:7} ({eta})").unwrap());
+    
+    for _ in 0..100 {
+        pb.inc(1);
+        std::thread::sleep(std::time::Duration::from_millis(5));
+    }
     let license: LicenseContent = response.json().await?;
     Ok(license)
 }
