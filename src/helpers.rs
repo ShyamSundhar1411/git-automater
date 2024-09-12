@@ -16,7 +16,7 @@ pub fn status_printer(output:&Output){
 pub fn get_name() -> String {
     let name: String = match license::get_git_user_name() {
         Some(mut name) => {
-            // removing trailing newline (cross platform way)
+            
             if name.ends_with("\n") {
                 name.pop();
 

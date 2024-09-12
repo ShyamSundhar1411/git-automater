@@ -1,5 +1,5 @@
 use inquire::Text;
-use indicatif::{ProgressBar, ProgressStyle};
+
 use std::{process::Command,collections::HashMap};
 use crate::helpers::{self, display_options};
 pub struct Commit{
@@ -45,14 +45,7 @@ impl Commit{
 }
 pub fn add_files(){
     let file_name: String = Text::new("File path").with_default(".").prompt().unwrap();
-    let pb = ProgressBar::new(100);
-    pb.set_style(ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{bar:40.green/white}] {pos:>7}/{len:7} ({eta})").unwrap());
-    
-    for _ in 0..100 {
-        pb.inc(1);
-        std::thread::sleep(std::time::Duration::from_millis(5));
-    }
-    
+
     
     let output = if file_name != "." {
         Command::new("git")
@@ -68,7 +61,7 @@ pub fn add_files(){
             .expect("failed to add files")
     };
     helpers::status_printer(&output); 
-    pb.set_message("Files added successfully");
+    
     
 }
 
@@ -108,13 +101,12 @@ pub fn commit_function(){
         Err(_) => return,
     };
 
-    // Optional fields
     let file_name: Option<String> = Text::new("Enter file name or class name (default will be blank)")
         .with_default("")
         .prompt()
         .ok();
 
-    // Non-skippable field with validation
+
     let description = loop{
         let result = Text::new("Enter a short description").prompt();
         match result{
@@ -152,7 +144,6 @@ pub fn commit_function(){
 
     let commit_message = commit.to_string();
 
-    // Execute the Git command
     let output = Command::new("git")
         .arg("commit")
         .arg("-m")
@@ -160,20 +151,10 @@ pub fn commit_function(){
         .output()
         .expect("Failed to add commit message");
 
-    // Show a progress bar
-    let pb = ProgressBar::new(100);
-    pb.set_style(
-        ProgressStyle::with_template(
-            "{spinner:.green} [{elapsed_precise}] [{bar:40.green/white}] {pos:>7}/{len:7} ({eta})"
-        ).unwrap()
-    );
+    
+   
 
-    for _ in 0..100 {
-        pb.inc(1);
-        std::thread::sleep(std::time::Duration::from_millis(5));
-    }
-
-    pb.finish_with_message("Commit created");
+  
 
     helpers::status_printer(&output);
 }

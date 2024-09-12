@@ -4,6 +4,7 @@ mod license;
 mod commits;
 mod branches;
 mod gitignore;
+mod clone;
 use simplelog::*;
 use std::fs::File;
 use log::info;

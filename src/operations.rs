@@ -2,13 +2,14 @@ use inquire::error::InquireError;
 use console::Style;
 use std::{process::{exit, Command},collections::HashMap};
 use indexmap::IndexMap;
-use crate::{branches, commits, gitignore, helpers::{self, display_options}, license};
+use crate::{branches, commits, gitignore, helpers::{self, display_options}, license, clone};
 pub fn prompt(){
     let actions: IndexMap<&str,fn()> = IndexMap::from([
         ("Initialize Git Repository",initialize as fn()),
         ("Add Files",commits::add_files as fn()),
         ("Commit", commits::commit_function as fn()),
         ("Push", push as fn()),
+        ("Clone",clone::clone_repository as fn()),
         ("Add License", generate_license as fn()),
         ("Add .gitignore", gitignore::generate_gitignore as fn()),
         ("Branch Manager", branches::branch_manager as fn()),
