@@ -56,3 +56,13 @@ pub fn get_year() -> String{
     let year: String = Input::with_theme(&ColorfulTheme::default()).with_prompt("Enter year").default(current_year.to_string()).interact_text().unwrap();
     year
 }
+
+pub fn validate_remote_url(input_url: &str) -> Result<(),&'static str>{
+    if input_url.starts_with("https://") && input_url.ends_with(".git"){
+        Ok(())
+    } else if input_url.starts_with("git@") && input_url.ends_with(".git"){
+        Ok(())
+    } else {
+        Err("Please enter a valid Git remote URL (https or ssh)")
+    }
+}

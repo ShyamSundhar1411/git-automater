@@ -1,8 +1,8 @@
 use dialoguer::{{console::Style, theme::ColorfulTheme, FuzzySelect }};
 use std::{process::{Command,exit}, collections::HashMap};
-use crate::{license, branches, commits, helpers, gitignore};
+use crate::{license, branches, commits, helpers, gitignore, remote};
 pub fn prompt(){
-    let items = vec!["Initialize Git Repository","Add Files","Commit","Push","Add License","Add .gitignore","Branch Manager","Clear Cache","Exit"];
+    let items = vec!["Initialize Git Repository","Add Files","Commit","Push","Add License","Add .gitignore","Branch Manager","Remote Manager","Clear Cache","Exit"];
     let selection = FuzzySelect::with_theme(&ColorfulTheme::default()).with_prompt("What do you choose?").items(&items).interact().unwrap();
     println!("{}",items[selection]);
 
@@ -29,12 +29,14 @@ pub fn prompt(){
     if selection == 6{
         branches::branch_manager();
     }
-
     if selection == 7{
+        remote::remote_manager();
+    }
+    if selection == 8{
         clear_cache();
     }
     
-    if selection == 8{
+    if selection == 9{
         exit_prompt();
     }
 }

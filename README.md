@@ -45,6 +45,7 @@ Here are few:
 * Add License
 * Add .gitignore
 * Branch Manager
+* Remote Manager
 * Clear Cache
 * Exit Prompt
 
