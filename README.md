@@ -1,105 +1,94 @@
-<br/>
-<p align="center">
-  <a href="https://github.com/ShyamSundhar1411/git-automater">
-    <img src="https://git-scm.com/images/logos/downloads/Git-Icon-1788C.png" alt="Logo" width="80" height="80">
-  </a>
+<div align="center">
 
-  <h3 align="center">Git Automater</h3>
+# Git Automater
 
-  <p align="center">
-    Git Automater: Your Shortcut to Seamless Version Control!
-    <br/>
-    <br/>
-    <a href="https://github.com/ShyamSundhar1411/git-automater"><strong>Explore the docs »</strong></a>
-    <br/>
-    <br/>
-    <a href="https://github.com/ShyamSundhar1411/git-automater/issues">Report Bug</a>
-    .
-    <a href="https://github.com/ShyamSundhar1411/git-automater/issues">Request Feature</a>
-  </p>
-</p>
+**An interactive Rust CLI that removes the friction from everyday Git.**
 
-![Downloads](https://img.shields.io/github/downloads/ShyamSundhar1411/git-automater/total) ![Contributors](https://img.shields.io/github/contributors/ShyamSundhar1411/git-automater?color=dark-green) ![Forks](https://img.shields.io/github/forks/ShyamSundhar1411/git-automater?style=social) ![Stargazers](https://img.shields.io/github/stars/ShyamSundhar1411/git-automater?style=social) ![Issues](https://img.shields.io/github/issues/ShyamSundhar1411/git-automater) ![License](https://img.shields.io/github/license/ShyamSundhar1411/git-automater) 
+[![Crates.io](https://img.shields.io/crates/v/git-automater.svg)](https://crates.io/crates/git-automater)
+[![Downloads](https://img.shields.io/crates/d/git-automater.svg)](https://crates.io/crates/git-automater)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## Table Of Contents
+*10,000+ downloads on crates.io*
 
-* [About the Project](#about-the-project)
-* [Built With](#built-with)
-* [Getting Started](#getting-started)
-  * [Prerequisites](#prerequisites)
-  * [Installing](#installing)
-* [Contributing](#contributing)
-* [License](#license)
-
-## About The Project
+</div>
 
 ![demo](https://us-east-1.tixte.net/uploads/shyamsundhar.tixte.co/2023-11-12_18-16-40.gif)
 
-There are a lot of processes and commands that are involved in github. Remembering those takes time and indeed version controlling is an important trait for every programmer. In order to reduce the time consumption in using git in local environment, I have created this crate so that it eases the process of version controlling. This crate involves a lot of git processes.
+---
 
-Here are few:
-* Initialize Git Repository
-* Add Files
-* Commit
-* Push
-* Add License
-* Add .gitignore
-* Branch Manager
-* Remote Manager
-* Clear Cache
-* Exit Prompt
+## Why
 
-## Built With
-* [rust](https://www.rust-lang.org/)
+Git is powerful but command-heavy. Writing a well-formed Conventional Commit, adding the right
+license, generating a `.gitignore`, or picking the correct remote and branch to push to all mean
+remembering exact syntax or looking things up.
 
-## Getting Started
+Git Automater wraps those flows in a single fuzzy-searchable menu. You pick what you want to do,
+it prompts for what it needs, and it runs the right Git command for you — no syntax to memorise.
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+## Features
 
-### Prerequisites
+| Feature | What it does |
+|---|---|
+| **Initialize repository** | Runs `git init` in the current directory |
+| **Add files** | Stage a specific path or everything (`.`) |
+| **Conventional Commits** | Guided commit builder — pick a type (`feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`), each mapped to an emoji, then add an optional scope, body, and footer |
+| **Push** | Fuzzy-select the branch *and* remote from your actual repo, then pushes with `-u` |
+| **License generator** | Fetches the live license list from the GitHub API, then writes the chosen license with your name and the current year filled in |
+| **.gitignore generator** | Generates a `.gitignore` for your project |
+| **Branch manager** | Create, switch, and manage branches interactively |
+| **Remote manager** | Add, view, and manage remotes interactively |
+| **Clear cache** | `git rm -r --cached .` for when `.gitignore` changes need to take effect |
 
-This crate requires the installation of cargo package manager and rust.
+Everything runs through a fuzzy-select prompt, so you can type a few characters instead of
+scrolling.
 
-* cargo
-* rust
-  
-For more information, kindly refer the [Documentation](https://www.rust-lang.org/tools/install) for installation procedures.
+## Install
 
-### Installing
-
-#### Using Cargo
+**From crates.io (recommended)**
 
 ```bash
-  cargo install git-automater
+cargo install git-automater
 ```
 
-#### Using Source
+**From source**
 
 ```bash
-  git clone https://github.com/ShyamSundhar1411/git-automater.git
-  cd git-automater
-  cargo install --path
+git clone https://github.com/ShyamSundhar1411/git-automater.git
+cd git-automater
+cargo install --path .
 ```
-## Roadmap
 
-See the [open issues](https://github.com/ShyamSundhar1411/git-automater/issues) for a list of proposed features (and known issues).
+Requires [Rust and Cargo](https://www.rust-lang.org/tools/install).
+
+## Usage
+
+```bash
+git-automater
+```
+
+That's it — you'll get an interactive menu. Use arrow keys or start typing to filter, then press
+Enter.
+
+## Built with
+
+- [Rust](https://www.rust-lang.org/) (2021 edition)
+- [dialoguer](https://crates.io/crates/dialoguer) — fuzzy-select prompts and theming
+- [reqwest](https://crates.io/crates/reqwest) — GitHub API calls for license fetching
+- [serde](https://crates.io/crates/serde) — JSON deserialisation
+- [chrono](https://crates.io/crates/chrono) — year resolution for licenses
+- [emojis](https://crates.io/crates/emojis) — commit-type emoji mapping
 
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-* If you have suggestions for adding or removing projects, feel free to [open an issue](https://github.com/ShyamSundhar1411/git-automater/issues/new) to discuss it, or directly create a pull request after you edit the *README.md* file with necessary changes.
-* Please make sure you check your spelling and grammar.
-* Create individual PR for each suggestion.
+Issues and pull requests are welcome.
 
-### Creating A Pull Request
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Commit your changes
+4. Push and open a Pull Request
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Please open one PR per change, and check spelling and formatting before submitting.
 
 ## License
 
-Distributed under the MIT License. See [LICENSE](https://github.com/ShyamSundhar1411/git-automater/blob/master/LICENSE) for more information.
+MIT — see [LICENSE](LICENSE).
